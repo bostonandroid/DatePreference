@@ -1,0 +1,18 @@
+With just the DatePreference source code loaded in Eclipse:
+
+  In the Package Explorer right click on the "default.jardesc" file and select "Create JAR"
+
+In Eclipse with your project open:
+
+  1. In the Package Explorer right click on your project and select "Properties".
+  2. Select "Java Build Path" -> "Libraries".
+  3. "Add External JARs..." then select the DatePreference.jar file.
+
+In your activity that descends from PreferenceActivity:
+
+  import android.preference.DatePreference;
+  
+In your preference XML:
+
+  <DatePreference android:key="dob" android:title="@string/dob"
+                  android:defaultValue="1991.01.01" />

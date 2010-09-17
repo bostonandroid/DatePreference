@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <DatePreference android:key="dob" android:title="Date of Birth"
+    android:defaultValue="1991.01.01" />
+  <DatePreference android:key="dod" android:title="Date of Death" />
+    <DatePreference android:key="doa" android:title="Date of Arrival"
+    android:defaultValue="abcde" />
+</PreferenceScreen>
