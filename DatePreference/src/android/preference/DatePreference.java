@@ -61,7 +61,7 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
   @Override
   protected void onSetInitialValue(boolean restoreValue, Object def) {
       if (restoreValue) {
-          this.defaultValue = getPersistedString(defaultValue);
+          this.defaultValue = getPersistedString(this.defaultValue);
       } else {
           String value = (String) def;
           this.defaultValue = value;
