@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import android.content.DialogInterface;
 import android.preference.DatePreference;
 import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
@@ -108,9 +109,11 @@ public class DatePreferenceActivityTest extends
         KeyEvent.KEYCODE_0,
         KeyEvent.KEYCODE_2);
 
-    pressOK();
+
+    DatePreference datePreference = getDatePreference(activity);
+    clickOK(datePreference);
     
-    Calendar newDate = getDatePreference(activity).getDate();
+    Calendar newDate = datePreference.getDate();
     Calendar expected = defaultDate();
     expected.add(Calendar.DAY_OF_MONTH, 1);
     
@@ -140,6 +143,11 @@ public class DatePreferenceActivityTest extends
         KeyEvent.KEYCODE_DPAD_DOWN,
         KeyEvent.KEYCODE_DPAD_LEFT,
         KeyEvent.KEYCODE_DPAD_CENTER);
+  }
+  
+  // actually different than pressing OK
+  private void clickOK(DatePreference dialog) {
+    dialog.onClick(null, DialogInterface.BUTTON1);
   }
   
   private void pressCancel() {
