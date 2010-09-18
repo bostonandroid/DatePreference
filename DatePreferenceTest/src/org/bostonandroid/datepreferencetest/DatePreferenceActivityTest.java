@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import android.app.Dialog;
 import android.preference.DatePreference;
 import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
@@ -51,18 +50,13 @@ public class DatePreferenceActivityTest extends
   public void testDateChanged() {
     DatePreferenceActivity activity = getActivity();
     assertNotNull(activity);
-    PreferenceManager preferenceManager = activity.getPreferenceManager();
-    assertNotNull(preferenceManager);
-    DatePreference datePreference = (DatePreference)preferenceManager.findPreference("dod");
-    assertNotNull(datePreference);
-    final Dialog datePickerDialog = datePreference.getDialog();
-    assertNotNull(datePickerDialog); // XXX: This is null.
     
-    activity.runOnUiThread(new Runnable() {
-      public void run() {
-        datePickerDialog.show();
-      }
-    });
+    // select the DoD preference
+    sendKeys(KeyEvent.KEYCODE_DPAD_UP, // the top
+        KeyEvent.KEYCODE_DPAD_DOWN,    // down one
+        KeyEvent.KEYCODE_DPAD_CENTER);
+
+    // increment the day
     sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
         KeyEvent.KEYCODE_DPAD_UP,
         KeyEvent.KEYCODE_DPAD_RIGHT,
@@ -71,14 +65,21 @@ public class DatePreferenceActivityTest extends
         KeyEvent.KEYCODE_DPAD_CENTER,
         KeyEvent.KEYCODE_DPAD_DOWN,
         KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_LEFT,
         KeyEvent.KEYCODE_DPAD_CENTER);
     
+    PreferenceManager preferenceManager = activity.getPreferenceManager();
+    assertNotNull(preferenceManager);
+    final DatePreference datePreference = (DatePreference)preferenceManager.findPreference("dod");
+    assertNotNull(datePreference);
     Calendar newDate = datePreference.getDate();
     Calendar expected = defaultDate();
-    expected.add(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
+    expected.add(Calendar.DAY_OF_MONTH, 1);
     
     assertCalendarDateEquals(expected, newDate);
   }
+  
+  // TODO: test: editing a date field by inputing the numbers; inputting letters?; pressing cancel
   
   private Calendar defaultDate() {
     return new GregorianCalendar(1970, 0, 1);
