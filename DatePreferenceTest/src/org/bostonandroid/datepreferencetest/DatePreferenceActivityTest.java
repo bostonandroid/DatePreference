@@ -51,28 +51,19 @@ public class DatePreferenceActivityTest extends
     DatePreferenceActivity activity = getActivity();
     assertNotNull(activity);
     
-    // select the DoD preference
-    sendKeys(KeyEvent.KEYCODE_DPAD_UP, // the top
-        KeyEvent.KEYCODE_DPAD_DOWN,    // down one
-        KeyEvent.KEYCODE_DPAD_CENTER);
-
+    activateDodPreference();
+    
     // increment the day
     sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
         KeyEvent.KEYCODE_DPAD_UP,
         KeyEvent.KEYCODE_DPAD_RIGHT,
         KeyEvent.KEYCODE_DPAD_UP,
         KeyEvent.KEYCODE_DPAD_UP,
-        KeyEvent.KEYCODE_DPAD_CENTER,
-        KeyEvent.KEYCODE_DPAD_DOWN,
-        KeyEvent.KEYCODE_DPAD_DOWN,
-        KeyEvent.KEYCODE_DPAD_LEFT,
         KeyEvent.KEYCODE_DPAD_CENTER);
+
+    pressOK();
     
-    PreferenceManager preferenceManager = activity.getPreferenceManager();
-    assertNotNull(preferenceManager);
-    final DatePreference datePreference = (DatePreference)preferenceManager.findPreference("dod");
-    assertNotNull(datePreference);
-    Calendar newDate = datePreference.getDate();
+    Calendar newDate = getDatePreference(activity).getDate();
     Calendar expected = defaultDate();
     expected.add(Calendar.DAY_OF_MONTH, 1);
     
@@ -83,10 +74,7 @@ public class DatePreferenceActivityTest extends
     DatePreferenceActivity activity = getActivity();
     assertNotNull(activity);
     
-    // select the DoD preference
-    sendKeys(KeyEvent.KEYCODE_DPAD_UP, // the top
-        KeyEvent.KEYCODE_DPAD_DOWN,    // down one
-        KeyEvent.KEYCODE_DPAD_CENTER);
+    activateDodPreference();
 
     // increment the day
     sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
@@ -94,23 +82,42 @@ public class DatePreferenceActivityTest extends
         KeyEvent.KEYCODE_DPAD_RIGHT,
         KeyEvent.KEYCODE_DPAD_UP,
         KeyEvent.KEYCODE_DPAD_UP,
-        KeyEvent.KEYCODE_DPAD_CENTER,
-        KeyEvent.KEYCODE_DPAD_DOWN,
-        KeyEvent.KEYCODE_DPAD_DOWN,
-        KeyEvent.KEYCODE_DPAD_RIGHT, // the cancel button
         KeyEvent.KEYCODE_DPAD_CENTER);
     
-    PreferenceManager preferenceManager = activity.getPreferenceManager();
-    assertNotNull(preferenceManager);
-    final DatePreference datePreference = (DatePreference)preferenceManager.findPreference("dod");
-    assertNotNull(datePreference);
-    Calendar newDate = datePreference.getDate();
+    pressCancel();
+    
+    Calendar newDate = getDatePreference(activity).getDate();
     Calendar expected = defaultDate();
     
     assertCalendarDateEquals(expected, newDate);
   }
   
-  // TODO: test: editing a date field by inputing the numbers; inputting letters?; pressing cancel
+  public void testDateEdited() {
+    DatePreferenceActivity activity = getActivity();
+    assertNotNull(activity);
+    
+    activateDodPreference();
+
+    // change the day
+    sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DEL,
+        KeyEvent.KEYCODE_DEL,
+        KeyEvent.KEYCODE_0,
+        KeyEvent.KEYCODE_2);
+
+    pressOK();
+    
+    Calendar newDate = getDatePreference(activity).getDate();
+    Calendar expected = defaultDate();
+    expected.add(Calendar.DAY_OF_MONTH, 1);
+    
+    assertCalendarDateEquals(expected, newDate);
+  }
+  
+  // TODO: test: inputting letters?; edge case: increment date, cancel, show pref, OK, date is now set to canceled date
   
   private Calendar defaultDate() {
     return new GregorianCalendar(1970, 0, 1);
@@ -125,5 +132,35 @@ public class DatePreferenceActivityTest extends
   
   private SimpleDateFormat formatter() {
     return new SimpleDateFormat("yyyy.MM.dd");
+  }
+  
+  private void pressOK() {
+    sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_LEFT,
+        KeyEvent.KEYCODE_DPAD_CENTER);
+  }
+  
+  private void pressCancel() {
+      sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
+          KeyEvent.KEYCODE_DPAD_DOWN,
+          KeyEvent.KEYCODE_DPAD_DOWN,
+          KeyEvent.KEYCODE_DPAD_RIGHT,
+          KeyEvent.KEYCODE_DPAD_CENTER);
+  }
+  
+  private void activateDodPreference() {
+    sendKeys(KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_CENTER);
+  }
+  
+  private DatePreference getDatePreference(DatePreferenceActivity activity) {
+    PreferenceManager preferenceManager = activity.getPreferenceManager();
+    assertNotNull(preferenceManager);
+    DatePreference datePreference = (DatePreference)preferenceManager.findPreference("dod");
+    assertNotNull(datePreference);
+    return datePreference;
   }
 }

@@ -36,7 +36,7 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
   
   public Calendar getDate() {
     try {
-      Date date = formatter().parse(this.defaultValue);
+      Date date = formatter().parse(defaultValue());
       Calendar cal = Calendar.getInstance();
       cal.setTime(date);
       return cal;
