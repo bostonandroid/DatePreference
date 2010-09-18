@@ -13,6 +13,7 @@ import android.widget.DatePicker;
 
 public class DatePreference extends DialogPreference implements DatePicker.OnDateChangedListener {
   protected String defaultValue;
+  protected String changedValue;
  
   public DatePreference(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
@@ -35,10 +36,10 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
   
   public Calendar getDate() {
     if (defaultValue == null) {
-      defaultValue = "1970.01.01";
+      this.defaultValue = "1970.01.01";
     }
     try {
-      Date date = formatter().parse(defaultValue);
+      Date date = formatter().parse(this.defaultValue);
       Calendar cal = Calendar.getInstance();
       cal.setTime(date);
       return cal;
@@ -60,16 +61,23 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
   @Override
   protected void onSetInitialValue(boolean restoreValue, Object def) {
       if (restoreValue) {
-          defaultValue = getPersistedString(defaultValue);
+          this.defaultValue = getPersistedString(defaultValue);
       } else {
           String value = (String) def;
-          defaultValue = value;
+          this.defaultValue = value;
           persistString(value);
       }
   }
   
   public void onDateChanged(DatePicker view, int year, int month, int day) {
     Calendar selected = new GregorianCalendar(year, month, day);
-    defaultValue = formatter().format(selected.getTime());
+    this.changedValue = formatter().format(selected.getTime());
+  }
+  
+  @Override
+  protected void onDialogClosed(boolean shouldSave) {
+    if (shouldSave) {
+      this.defaultValue = this.changedValue;
+    }
   }
 }

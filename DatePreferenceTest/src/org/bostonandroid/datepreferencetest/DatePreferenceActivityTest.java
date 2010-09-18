@@ -79,6 +79,37 @@ public class DatePreferenceActivityTest extends
     assertCalendarDateEquals(expected, newDate);
   }
   
+  public void testDateCanceled() {
+    DatePreferenceActivity activity = getActivity();
+    assertNotNull(activity);
+    
+    // select the DoD preference
+    sendKeys(KeyEvent.KEYCODE_DPAD_UP, // the top
+        KeyEvent.KEYCODE_DPAD_DOWN,    // down one
+        KeyEvent.KEYCODE_DPAD_CENTER);
+
+    // increment the day
+    sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_CENTER,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_RIGHT, // the cancel button
+        KeyEvent.KEYCODE_DPAD_CENTER);
+    
+    PreferenceManager preferenceManager = activity.getPreferenceManager();
+    assertNotNull(preferenceManager);
+    final DatePreference datePreference = (DatePreference)preferenceManager.findPreference("dod");
+    assertNotNull(datePreference);
+    Calendar newDate = datePreference.getDate();
+    Calendar expected = defaultDate();
+    
+    assertCalendarDateEquals(expected, newDate);
+  }
+  
   // TODO: test: editing a date field by inputing the numbers; inputting letters?; pressing cancel
   
   private Calendar defaultDate() {
