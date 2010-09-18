@@ -11,10 +11,8 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
-        <file path="/DatePreference/.classpath"/>
         <javaElement handleIdentifier="=DatePreference/src"/>
-        <file path="/DatePreference/README"/>
-        <file path="/DatePreference/LICENSE"/>
+        <file path="/DatePreference/.classpath"/>
         <file path="/DatePreference/.project"/>
     </selectedElements>
 </jardesc>
