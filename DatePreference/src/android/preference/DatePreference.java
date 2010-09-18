@@ -35,9 +35,6 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
   }
   
   public Calendar getDate() {
-    if (defaultValue == null) {
-      this.defaultValue = "1970.01.01";
-    }
     try {
       Date date = formatter().parse(this.defaultValue);
       Calendar cal = Calendar.getInstance();
@@ -45,7 +42,7 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
       return cal;
     } catch (java.text.ParseException e) {
       e.printStackTrace();
-      return new GregorianCalendar(1970, 0, 1);
+      return defaultDate();
     }
   }
   
@@ -61,7 +58,7 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
   @Override
   protected void onSetInitialValue(boolean restoreValue, Object def) {
       if (restoreValue) {
-          this.defaultValue = getPersistedString(this.defaultValue);
+          this.defaultValue = getPersistedString(defaultValue());
       } else {
           String value = (String) def;
           this.defaultValue = value;
@@ -79,5 +76,16 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
     if (shouldSave) {
       this.defaultValue = this.changedValue;
     }
+  }
+  
+  private Calendar defaultDate() {
+    return new GregorianCalendar(1970, 0, 1);
+  }
+  
+  private String defaultValue() {
+    if (this.defaultValue == null) {
+      this.defaultValue = formatter().format(defaultDate().getTime());
+    }
+    return this.defaultValue;
   }
 }
