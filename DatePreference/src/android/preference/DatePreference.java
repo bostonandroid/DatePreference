@@ -1,5 +1,6 @@
 package android.preference;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -7,6 +8,7 @@ import java.util.GregorianCalendar;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
@@ -48,7 +50,7 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
     }
   }
   
-  private SimpleDateFormat formatter() {
+  public static SimpleDateFormat formatter() {
     return new SimpleDateFormat("yyyy.MM.dd");
   }
   
@@ -81,13 +83,17 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
     }
   }
   
-  private Calendar defaultDate() {
+  public static Calendar defaultDate() {
     return new GregorianCalendar(1970, 0, 1);
+  }
+  
+  public static String defaultDateString() {
+    return formatter().format(defaultDate().getTime());
   }
   
   private String defaultValue() {
     if (this.defaultValue == null) {
-      this.defaultValue = formatter().format(defaultDate().getTime());
+      this.defaultValue = defaultDateString();
     }
     return this.defaultValue;
   }
@@ -98,5 +104,21 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
     datePicker.clearFocus();
     onDateChanged(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
     onDialogClosed(which == DialogInterface.BUTTON1); // OK?
+  }
+  
+  
+  public static Date getDateFor(SharedPreferences preferences, String field) {
+    try {
+      return formatter().parse(preferences.getString(field, defaultDateString()));
+    } catch (ParseException e) {
+      return defaultDate().getTime();
+    }
+  }
+  
+  public static Calendar getCalendarFor(SharedPreferences preferences, String field) {
+    Date date = getDateFor(preferences,field);
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(date);
+    return cal;
   }
 }

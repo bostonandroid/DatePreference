@@ -1,7 +1,13 @@
 package org.bostonandroid.datepreferencetest;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.DatePreference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 
 public class DatePreferenceActivity extends PreferenceActivity {
   private Bundle savedInstanceState;
@@ -14,5 +20,16 @@ public class DatePreferenceActivity extends PreferenceActivity {
   
   public Bundle getBundle() {
     return savedInstanceState;
+  }
+
+  public Date getDateOfDeath() {
+    return DatePreference.getDateFor(preferences(),"dod");
+  }
+  public Calendar getCalendarOfDeath() {
+    return DatePreference.getCalendarFor(preferences(),"dod");
+  }
+  
+  private SharedPreferences preferences() {
+    return PreferenceManager.getDefaultSharedPreferences(this);
   }
 }

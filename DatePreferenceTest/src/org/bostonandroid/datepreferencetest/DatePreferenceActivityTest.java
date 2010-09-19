@@ -2,6 +2,7 @@ package org.bostonandroid.datepreferencetest;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.content.DialogInterface;
@@ -151,6 +152,24 @@ public class DatePreferenceActivityTest extends
     assertCalendarDateEquals(expected, newDate);
   }
   
+  public void testSharedPreferences() {
+    DatePreferenceActivity activity = getActivity();
+    assertNotNull(activity);
+    
+    activateDodPreference();
+    // increment the day
+    sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_CENTER);
+    pressOK();
+
+    assertDateEquals(defaultDate().getTime(), activity.getDateOfDeath());
+    assertCalendarDateEquals(defaultDate(), activity.getCalendarOfDeath());
+  }
+  
   private Calendar defaultDate() {
     return new GregorianCalendar(1970, 0, 1);
   }
@@ -161,6 +180,14 @@ public class DatePreferenceActivityTest extends
     assertEquals(msg, expected.get(Calendar.MONTH), actual.get(Calendar.MONTH));
     assertEquals(msg, expected.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
   }
+  
+  protected void assertDateEquals(Date expected, Date actual) {
+    String msg = "Expected: " + formatter().format(expected.getTime()) + " but got: " + formatter().format(actual.getTime());
+    assertEquals(msg, expected.getYear(), actual.getYear());
+    assertEquals(msg, expected.getMonth(), actual.getMonth());
+    assertEquals(msg, expected.getDay(), actual.getDay());
+  }
+
   
   private SimpleDateFormat formatter() {
     return new SimpleDateFormat("yyyy.MM.dd");
