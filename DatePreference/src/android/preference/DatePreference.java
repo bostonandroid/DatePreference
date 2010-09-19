@@ -17,7 +17,7 @@ import android.widget.DatePicker;
 public class DatePreference extends DialogPreference implements
     DatePicker.OnDateChangedListener {
   private String defaultValue;
-  private String changedValue;
+  private String changedValueCanBeNull;
   private DatePicker datePicker;
 
   public DatePreference(Context context, AttributeSet attrs, int defStyle) {
@@ -98,7 +98,7 @@ public class DatePreference extends DialogPreference implements
    */
   public void onDateChanged(DatePicker view, int year, int month, int day) {
     Calendar selected = new GregorianCalendar(year, month, day);
-    this.changedValue = formatter().format(selected.getTime());
+    this.changedValueCanBeNull = formatter().format(selected.getTime());
   }
 
   /**
@@ -107,9 +107,9 @@ public class DatePreference extends DialogPreference implements
    */
   @Override
   protected void onDialogClosed(boolean shouldSave) {
-    if (shouldSave && this.changedValue != null) {
-      this.defaultValue = this.changedValue;
-      this.changedValue = null;
+    if (shouldSave && this.changedValueCanBeNull != null) {
+      this.defaultValue = this.changedValueCanBeNull;
+      this.changedValueCanBeNull = null;
     }
   }
 
