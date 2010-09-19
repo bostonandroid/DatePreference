@@ -14,30 +14,43 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
 
-public class DatePreference extends DialogPreference implements DatePicker.OnDateChangedListener {
-  protected String defaultValue;
-  protected String changedValue;
+public class DatePreference extends DialogPreference implements
+    DatePicker.OnDateChangedListener {
+  private String defaultValue;
+  private String changedValue;
   private DatePicker datePicker;
- 
+
   public DatePreference(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
   }
-  
+
   public DatePreference(Context context, AttributeSet attrs) {
     super(context, attrs);
   }
-  
+
+  /**
+   * Produces a DatePicker set to the date produced by {@link getDate}. When
+   * overriding be sure to call the super.
+   * 
+   * @return a DatePicker with the date set
+   */
   @Override
   protected View onCreateDialogView() {
     this.datePicker = new DatePicker(getContext());
     Calendar calendar = getDate();
-    datePicker.init(calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH),
-        this);
+    datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH), this);
     return datePicker;
   }
-  
+
+  /**
+   * Produces the date used for the date picker. If the user has not selected a
+   * date, produces the default from the XML's android:defaultValue. If the
+   * default is not set in the XML or if the XML's default is invalid it uses
+   * the value produced by {@link defaultDate}.
+   * 
+   * @return the Calendar for the date picker
+   */
   public Calendar getDate() {
     try {
       Date date = formatter().parse(defaultValue());
@@ -49,32 +62,49 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
       return defaultDate();
     }
   }
-  
+
+  /**
+   * Produces the date formatter used for all dates. The default is yyyy.MM.dd.
+   * Override this to change that.
+   * 
+   * @return the SimpleDateFormat used for all dates
+   */
   public static SimpleDateFormat formatter() {
     return new SimpleDateFormat("yyyy.MM.dd");
   }
-  
+
   @Override
   protected Object onGetDefaultValue(TypedArray a, int index) {
     return a.getString(index);
   }
-  
+
+  /**
+   * Called when the date picker is shown or restored. If it's a restore it gets
+   * the persisted value, otherwise it persists the value.
+   */
   @Override
   protected void onSetInitialValue(boolean restoreValue, Object def) {
-      if (restoreValue) {
-          this.defaultValue = getPersistedString(defaultValue());
-      } else {
-          String value = (String) def;
-          this.defaultValue = value;
-          persistString(value);
-      }
+    if (restoreValue) {
+      this.defaultValue = getPersistedString(defaultValue());
+    } else {
+      String value = (String) def;
+      this.defaultValue = value;
+      persistString(value);
+    }
   }
-  
+
+  /**
+   * Called when the user changes the date.
+   */
   public void onDateChanged(DatePicker view, int year, int month, int day) {
     Calendar selected = new GregorianCalendar(year, month, day);
     this.changedValue = formatter().format(selected.getTime());
   }
-  
+
+  /**
+   * Called when the dialog is closed. If the close was by pressing "OK" it
+   * saves the value.
+   */
   @Override
   protected void onDialogClosed(boolean shouldSave) {
     if (shouldSave && this.changedValue != null) {
@@ -82,41 +112,78 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
       this.changedValue = null;
     }
   }
-  
+
+  /**
+   * The default date to use when the XML does not set it or the XML has an
+   * error.
+   * 
+   * @return the Calendar set to the default date
+   */
   public static Calendar defaultDate() {
     return new GregorianCalendar(1970, 0, 1);
   }
-  
+
+  /**
+   * The defaultDate() as a string using the {@link formatter}.
+   * 
+   * @return a String representation of the default date
+   */
   public static String defaultDateString() {
     return formatter().format(defaultDate().getTime());
   }
-  
+
   private String defaultValue() {
     if (this.defaultValue == null) {
       this.defaultValue = defaultDateString();
     }
     return this.defaultValue;
   }
-  
+
+  /**
+   * Called whenever the user clicks on a button. Invokes {@link onDateChanged} and
+   * {@link onDialogClosed}. Be sure to call the super when overriding.
+   */
   @Override
   public void onClick(DialogInterface dialog, int which) {
     super.onClick(dialog, which);
     datePicker.clearFocus();
-    onDateChanged(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+    onDateChanged(datePicker, datePicker.getYear(), datePicker.getMonth(),
+        datePicker.getDayOfMonth());
     onDialogClosed(which == DialogInterface.BUTTON1); // OK?
   }
-  
-  
+
+  /**
+   * Produces the date the user has selected for the given preference. If there
+   * are any internal errors it produces the {@link defaultDate} instead.
+   * 
+   * @param preferences
+   *          the SharedPreferences to get the date from
+   * @param name
+   *          the name of the preference to get the date from
+   * @return a Date that the user has selected
+   */
   public static Date getDateFor(SharedPreferences preferences, String field) {
     try {
-      return formatter().parse(preferences.getString(field, defaultDateString()));
+      return formatter().parse(
+          preferences.getString(field, defaultDateString()));
     } catch (ParseException e) {
       return defaultDate().getTime();
     }
   }
-  
-  public static Calendar getCalendarFor(SharedPreferences preferences, String field) {
-    Date date = getDateFor(preferences,field);
+
+  /**
+   * Produces the date the user has selected for the given preference, as a
+   * calendar.
+   * 
+   * @param preferences
+   *          the SharedPreferences to get the date from
+   * @param name
+   *          the name of the preference to get the date from
+   * @return a Calendar that the user has seletced
+   */
+  public static Calendar getCalendarFor(SharedPreferences preferences,
+      String field) {
+    Date date = getDateFor(preferences, field);
     Calendar cal = Calendar.getInstance();
     cal.setTime(date);
     return cal;
