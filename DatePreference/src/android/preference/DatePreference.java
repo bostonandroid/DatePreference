@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.DatePicker;
 public class DatePreference extends DialogPreference implements DatePicker.OnDateChangedListener {
   protected String defaultValue;
   protected String changedValue;
+  private DatePicker datePicker;
  
   public DatePreference(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
@@ -25,7 +27,7 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
   
   @Override
   protected View onCreateDialogView() {
-    DatePicker datePicker = new DatePicker(getContext());
+    this.datePicker = new DatePicker(getContext());
     Calendar calendar = getDate();
     datePicker.init(calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
@@ -87,5 +89,13 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
       this.defaultValue = formatter().format(defaultDate().getTime());
     }
     return this.defaultValue;
+  }
+  
+  @Override
+  public void onClick(DialogInterface dialog, int which) {
+    super.onClick(dialog, which);
+    datePicker.clearFocus();
+    onDateChanged(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+    onDialogClosed(which == DialogInterface.BUTTON1); // OK?
   }
 }

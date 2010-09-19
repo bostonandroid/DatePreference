@@ -110,8 +110,13 @@ public class DatePreferenceActivityTest extends
         KeyEvent.KEYCODE_2);
 
 
-    DatePreference datePreference = getDatePreference(activity);
-    clickOK(datePreference);
+    final DatePreference datePreference = getDatePreference(activity);
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        clickOK(datePreference);
+      }
+    });
+    getInstrumentation().waitForIdleSync();
     
     Calendar newDate = datePreference.getDate();
     Calendar expected = defaultDate();
@@ -146,6 +151,7 @@ public class DatePreferenceActivityTest extends
   }
   
   // actually different than pressing OK
+  // must run within the UI thread
   private void clickOK(DatePreference dialog) {
     dialog.onClick(null, DialogInterface.BUTTON1);
   }
