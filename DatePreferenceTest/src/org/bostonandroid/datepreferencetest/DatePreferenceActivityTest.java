@@ -125,7 +125,31 @@ public class DatePreferenceActivityTest extends
     assertCalendarDateEquals(expected, newDate);
   }
   
-  // TODO: test: inputting letters?; edge case: increment date, cancel, show pref, OK, date is now set to canceled date
+  public void testCancelThenOK() {
+    DatePreferenceActivity activity = getActivity();
+    assertNotNull(activity);
+    
+    activateDodPreference();
+
+    // increment the day
+    sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_CENTER);
+    
+    pressCancel();
+    activateDodPreference();
+    pressOK();
+    activateDodPreference();
+    pressOK();
+
+    Calendar newDate = getDatePreference(activity).getDate();
+    Calendar expected = defaultDate();
+    
+    assertCalendarDateEquals(expected, newDate);
+  }
   
   private Calendar defaultDate() {
     return new GregorianCalendar(1970, 0, 1);
@@ -166,6 +190,7 @@ public class DatePreferenceActivityTest extends
   
   private void activateDodPreference() {
     sendKeys(KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_UP,
         KeyEvent.KEYCODE_DPAD_DOWN,
         KeyEvent.KEYCODE_DPAD_CENTER);
   }

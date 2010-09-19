@@ -75,8 +75,9 @@ public class DatePreference extends DialogPreference implements DatePicker.OnDat
   
   @Override
   protected void onDialogClosed(boolean shouldSave) {
-    if (shouldSave) {
+    if (shouldSave && this.changedValue != null) {
       this.defaultValue = this.changedValue;
+      this.changedValue = null;
     }
   }
   
