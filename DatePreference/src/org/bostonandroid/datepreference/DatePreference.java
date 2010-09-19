@@ -1,4 +1,4 @@
-package android.preference;
+package org.bostonandroid.datepreference;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;

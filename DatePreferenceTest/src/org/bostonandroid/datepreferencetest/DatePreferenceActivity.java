@@ -3,9 +3,10 @@ package org.bostonandroid.datepreferencetest;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.bostonandroid.datepreference.DatePreference;
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.DatePreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 

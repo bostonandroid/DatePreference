@@ -5,8 +5,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.bostonandroid.datepreference.DatePreference;
+
 import android.content.DialogInterface;
-import android.preference.DatePreference;
 import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;

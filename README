@@ -1,7 +1,3 @@
-With just the DatePreference source code loaded in Eclipse:
-
-  In the Package Explorer right click on the "default.jardesc" file and select "Create JAR"
-
 In Eclipse with your project open:
 
   1. In the Package Explorer right click on your project and select "Properties".
@@ -10,9 +6,24 @@ In Eclipse with your project open:
 
 In your activity that descends from PreferenceActivity:
 
-  import android.preference.DatePreference;
+  import org.bostonandroid.datepreference.DatePreference;
   
 In your preference XML:
 
-  <DatePreference android:key="dob" android:title="@string/dob"
-                  android:defaultValue="1991.01.01" />
+  <org.bostonandroid.datepreference.DatePreference
+     android:key="dob" android:title="@string/dob"
+     android:defaultValue="1991.01.01" />
+
+To quickly get the Date selected for "dob", in your PreferenceActivity:
+
+  DatePreference.getDateFor(
+    PreferenceManager.getDefaultSharePreferences(this),
+    "dob");
+
+
+
+To make the JAR:
+
+With just the DatePreference source code loaded in Eclipse:
+
+  In the Package Explorer right click on the "default.jardesc" file and select "Create JAR"
