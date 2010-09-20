@@ -164,12 +164,7 @@ public class DatePreference extends DialogPreference implements
    * @return a Date that the user has selected
    */
   public static Date getDateFor(SharedPreferences preferences, String field) {
-    try {
-      return formatter().parse(
-          preferences.getString(field, defaultDateString()));
-    } catch (ParseException e) {
-      return defaultDate().getTime();
-    }
+    return stringToDate(preferences.getString(field, defaultDateString()));
   }
 
   /**
@@ -180,7 +175,7 @@ public class DatePreference extends DialogPreference implements
    *          the SharedPreferences to get the date from
    * @param name
    *          the name of the preference to get the date from
-   * @return a Calendar that the user has seletced
+   * @return a Calendar that the user has selected
    */
   public static Calendar getCalendarFor(SharedPreferences preferences,
       String field) {
@@ -188,5 +183,17 @@ public class DatePreference extends DialogPreference implements
     Calendar cal = Calendar.getInstance();
     cal.setTime(date);
     return cal;
+  }
+  
+  public void setDate(String dateString) {
+    this.defaultValue = dateString;
+  }
+  
+  private static Date stringToDate(String dateString) {
+    try {
+      return formatter().parse(dateString);
+    } catch (ParseException e) {
+      return defaultDate().getTime();
+    }
   }
 }

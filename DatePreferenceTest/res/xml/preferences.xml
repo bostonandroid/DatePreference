@@ -7,5 +7,6 @@
     android:key="dod" android:title="Date of Death" />
   <org.bostonandroid.datepreference.DatePreference
     android:key="doa" android:title="Date of Arrival"
-    android:defaultValue="abcde" />
+    android:defaultValue="abcde"
+    android:persistent="false" />
 </PreferenceScreen>

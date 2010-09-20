@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.bostonandroid.datepreference.DatePreference;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -19,18 +20,53 @@ public class DatePreferenceActivity extends PreferenceActivity {
     addPreferencesFromResource(R.xml.preferences);
   }
   
+  // This is used by the test.
   public Bundle getBundle() {
     return savedInstanceState;
   }
 
+  // This is used by the test.
   public Date getDateOfDeath() {
     return DatePreference.getDateFor(preferences(),"dod");
   }
+  
+  // This is used by the test.
   public Calendar getCalendarOfDeath() {
     return DatePreference.getCalendarFor(preferences(),"dod");
   }
   
+  // This is used by the test.
+  public Date getDateOfArrival() {
+    return DatePreference.getDateFor(preferences(),"doa");
+  }
+  
+  // This is used by the test.
+  public Calendar getCalendarOfArrival() {
+    return DatePreference.getCalendarFor(preferences(),"doa");
+  }
+  
   private SharedPreferences preferences() {
     return PreferenceManager.getDefaultSharedPreferences(this);
+  }
+  
+  protected void onResume() {
+    super.onResume();
+    
+    SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE); 
+    getPreference("doa").setDate(prefs.getString("doa", DatePreference.defaultDateString()));
+    getPreference("dod").setDate(prefs.getString("dod", DatePreference.defaultDateString()));
+  }
+  
+  protected void onPause() {
+    super.onPause();
+    
+    SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
+    editor.putString("doa", DatePreference.formatter().format(getDateOfArrival()));
+    editor.putString("dod", DatePreference.formatter().format(getDateOfDeath()));
+    editor.commit();
+  }
+  
+  private DatePreference getPreference(String key) {
+    return (DatePreference)getPreferenceManager().findPreference(key);
   }
 }

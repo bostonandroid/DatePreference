@@ -171,6 +171,40 @@ public class DatePreferenceActivityTest extends
     assertCalendarDateEquals(defaultDate(), activity.getCalendarOfDeath());
   }
   
+  public void testDestroyedAndPresistence() {
+    DatePreferenceActivity activity = getActivity();
+    assertNotNull(activity);
+    
+    activateDodPreference();
+    // increment the day
+    sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_CENTER);
+    pressOK();
+    activateDoaPreference(); // android:persistent=false
+    // increment the day
+    sendKeys(KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_CENTER);
+    pressOK();
+    activity.finish();
+    activity = getActivity();
+    
+    Calendar newDodDate = getDatePreference(activity, "dod").getDate();
+    Calendar expected = defaultDate();
+    expected.add(Calendar.DAY_OF_MONTH, 1);
+    assertCalendarDateEquals(expected, newDodDate);
+    
+    Calendar newDoaDate = getDatePreference(activity, "doa").getDate();
+    assertCalendarDateEquals(defaultDate(), newDoaDate);
+  }
+  
   private Calendar defaultDate() {
     return new GregorianCalendar(1970, 0, 1);
   }
@@ -223,11 +257,23 @@ public class DatePreferenceActivityTest extends
         KeyEvent.KEYCODE_DPAD_CENTER);
   }
   
-  private DatePreference getDatePreference(DatePreferenceActivity activity) {
+  private void activateDoaPreference() {
+    sendKeys(KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_CENTER);
+  }
+  
+  private DatePreference getDatePreference(DatePreferenceActivity activity, String field) {
     PreferenceManager preferenceManager = activity.getPreferenceManager();
     assertNotNull(preferenceManager);
-    DatePreference datePreference = (DatePreference)preferenceManager.findPreference("dod");
+    DatePreference datePreference = (DatePreference)preferenceManager.findPreference(field);
     assertNotNull(datePreference);
     return datePreference;
+  }
+  
+  private DatePreference getDatePreference(DatePreferenceActivity activity) {
+    return getDatePreference(activity, "dod");
   }
 }
