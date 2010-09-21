@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class DatePreferenceActivity extends PreferenceActivity {
   private Bundle savedInstanceState;
@@ -50,18 +51,20 @@ public class DatePreferenceActivity extends PreferenceActivity {
   }
   
   protected void onResume() {
+    Log.i("DatePreferenceActivity", "onResume()");
     super.onResume();
     
-    SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE); 
-    getPreference("doa").setDate(prefs.getString("doa", DatePreference.defaultDateString()));
+    SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+    Log.i("DatePreferenceActivity", prefs.getString("dod", DatePreference.defaultDateString()));
     getPreference("dod").setDate(prefs.getString("dod", DatePreference.defaultDateString()));
   }
   
   protected void onPause() {
+    Log.i("DatePreferenceActivity", "onPause()");
     super.onPause();
     
     SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
-    editor.putString("doa", DatePreference.formatter().format(getDateOfArrival()));
+    Log.i("DatePreferenceActivity", DatePreference.formatter().format(getDateOfDeath()));
     editor.putString("dod", DatePreference.formatter().format(getDateOfDeath()));
     editor.commit();
   }

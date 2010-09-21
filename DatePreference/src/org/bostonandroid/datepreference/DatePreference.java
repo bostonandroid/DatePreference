@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.View;
@@ -93,6 +95,25 @@ public class DatePreference extends DialogPreference implements
       persistString(value);
     }
   }
+  
+  @Override
+  protected Parcelable onSaveInstanceState() {
+    if (isPersistent())
+      return super.onSaveInstanceState();
+    else {
+      return new SavedState(super.onSaveInstanceState());
+    }
+  }
+  
+  @Override
+  protected void onRestoreInstanceState(Parcelable state) {
+    if (state == null || !state.getClass().equals(SavedState.class)) {
+      super.onRestoreInstanceState(state);
+    } else {
+      super.onRestoreInstanceState(((SavedState)state).getSuperState());
+      setDate(((SavedState)state).dateValue);
+    }
+  }
 
   /**
    * Called when the user changes the date.
@@ -111,6 +132,7 @@ public class DatePreference extends DialogPreference implements
     if (shouldSave && this.changedValueCanBeNull != null) {
       this.defaultValue = this.changedValueCanBeNull;
       this.changedValueCanBeNull = null;
+      persistString(this.defaultValue);
     }
   }
 
@@ -195,5 +217,34 @@ public class DatePreference extends DialogPreference implements
     } catch (ParseException e) {
       return defaultDate().getTime();
     }
+  }
+  
+  private static class SavedState extends BaseSavedState {
+    String dateValue;
+    public SavedState(Parcel p) {
+      super(p);
+      dateValue = p.readString();
+    }
+    public SavedState(Parcelable p) {
+      super(p);
+    }
+    
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+      super.writeToParcel(out, flags);
+      out.writeString(dateValue);
+    }
+  
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<SavedState> CREATOR =
+      new Parcelable.Creator<SavedState>() {
+      public SavedState createFromParcel(Parcel in) {
+        return new SavedState(in);
+      }
+
+      public SavedState[] newArray(int size) {
+        return new SavedState[size];
+      }
+    };
   }
 }

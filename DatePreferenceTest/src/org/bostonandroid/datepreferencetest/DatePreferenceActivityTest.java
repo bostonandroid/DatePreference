@@ -26,7 +26,7 @@ public class DatePreferenceActivityTest extends
   }
   
   public void testDefaultDateUnset() {
-    DatePreferenceActivity activity = getActivity();
+    DatePreferenceActivity activity = getRestoredActivity();
     PreferenceManager preferenceManager = activity.getPreferenceManager();
     DatePreference datePreference = (DatePreference)preferenceManager.findPreference("dod");
     Calendar givenDate = datePreference.getDate();
@@ -43,7 +43,7 @@ public class DatePreferenceActivityTest extends
   }
   
   public void testDefaultDateForBadDate() {
-    DatePreferenceActivity activity = getActivity();
+    DatePreferenceActivity activity = getRestoredActivity();
     PreferenceManager preferenceManager = activity.getPreferenceManager();
     DatePreference datePreference = (DatePreference)preferenceManager.findPreference("doa");
     Calendar defaultDate = datePreference.getDate();
@@ -51,7 +51,7 @@ public class DatePreferenceActivityTest extends
   }
   
   public void testDateChanged() {
-    DatePreferenceActivity activity = getActivity();
+    DatePreferenceActivity activity = getRestoredActivity();
     assertNotNull(activity);
     
     activateDodPreference();
@@ -74,7 +74,7 @@ public class DatePreferenceActivityTest extends
   }
   
   public void testDateCanceled() {
-    DatePreferenceActivity activity = getActivity();
+    DatePreferenceActivity activity = getRestoredActivity();
     assertNotNull(activity);
     
     activateDodPreference();
@@ -96,7 +96,7 @@ public class DatePreferenceActivityTest extends
   }
   
   public void testDateEdited() {
-    DatePreferenceActivity activity = getActivity();
+    DatePreferenceActivity activity = getRestoredActivity();
     assertNotNull(activity);
     
     activateDodPreference();
@@ -128,7 +128,7 @@ public class DatePreferenceActivityTest extends
   }
   
   public void testCancelThenOK() {
-    DatePreferenceActivity activity = getActivity();
+    DatePreferenceActivity activity = getRestoredActivity();
     assertNotNull(activity);
     
     activateDodPreference();
@@ -154,7 +154,7 @@ public class DatePreferenceActivityTest extends
   }
   
   public void testSharedPreferences() {
-    DatePreferenceActivity activity = getActivity();
+    DatePreferenceActivity activity = getRestoredActivity();
     assertNotNull(activity);
     
     activateDodPreference();
@@ -167,12 +167,14 @@ public class DatePreferenceActivityTest extends
         KeyEvent.KEYCODE_DPAD_CENTER);
     pressOK();
 
-    assertDateEquals(defaultDate().getTime(), activity.getDateOfDeath());
-    assertCalendarDateEquals(defaultDate(), activity.getCalendarOfDeath());
+    Calendar expected = defaultDate();
+    expected.add(Calendar.DAY_OF_MONTH, 1);
+    assertDateEquals(expected.getTime(), activity.getDateOfDeath());
+    assertCalendarDateEquals(expected, activity.getCalendarOfDeath());
   }
   
   public void testDestroyedAndPresistence() {
-    DatePreferenceActivity activity = getActivity();
+    DatePreferenceActivity activity = getRestoredActivity();
     assertNotNull(activity);
     
     activateDodPreference();
@@ -267,13 +269,19 @@ public class DatePreferenceActivityTest extends
   
   private DatePreference getDatePreference(DatePreferenceActivity activity, String field) {
     PreferenceManager preferenceManager = activity.getPreferenceManager();
-    assertNotNull(preferenceManager);
     DatePreference datePreference = (DatePreference)preferenceManager.findPreference(field);
-    assertNotNull(datePreference);
     return datePreference;
   }
   
   private DatePreference getDatePreference(DatePreferenceActivity activity) {
     return getDatePreference(activity, "dod");
+  }
+  
+  private DatePreferenceActivity getRestoredActivity() {
+    DatePreferenceActivity a = getActivity();
+    getDatePreference(a,"dob").setDate("1970.01.01");
+    getDatePreference(a,"dod").setDate("1970.01.01");
+    getDatePreference(a,"doa").setDate("1970.01.01");
+    return a;
   }
 }
