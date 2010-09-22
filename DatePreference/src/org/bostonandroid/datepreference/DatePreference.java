@@ -75,6 +75,10 @@ public class DatePreference extends DialogPreference implements
   public static SimpleDateFormat formatter() {
     return new SimpleDateFormat("yyyy.MM.dd");
   }
+  
+  public static SimpleDateFormat summaryFormatter() {
+    return new SimpleDateFormat("MMMM dd, yyyy");
+  }
 
   @Override
   protected Object onGetDefaultValue(TypedArray a, int index) {
@@ -92,7 +96,7 @@ public class DatePreference extends DialogPreference implements
     } else {
       String value = (String) def;
       this.defaultValue = value;
-      persistString(value);
+      setTheDate(value);
     }
   }
   
@@ -100,9 +104,8 @@ public class DatePreference extends DialogPreference implements
   protected Parcelable onSaveInstanceState() {
     if (isPersistent())
       return super.onSaveInstanceState();
-    else {
+    else
       return new SavedState(super.onSaveInstanceState());
-    }
   }
   
   @Override
@@ -110,8 +113,9 @@ public class DatePreference extends DialogPreference implements
     if (state == null || !state.getClass().equals(SavedState.class)) {
       super.onRestoreInstanceState(state);
     } else {
-      super.onRestoreInstanceState(((SavedState)state).getSuperState());
-      setDate(((SavedState)state).dateValue);
+      SavedState s = (SavedState)state;
+      super.onRestoreInstanceState(s.getSuperState());
+      setDate(s.dateValue);
     }
   }
 
@@ -132,8 +136,13 @@ public class DatePreference extends DialogPreference implements
     if (shouldSave && this.changedValueCanBeNull != null) {
       this.defaultValue = this.changedValueCanBeNull;
       this.changedValueCanBeNull = null;
-      persistString(this.defaultValue);
+      setTheDate(this.defaultValue);
     }
+  }
+  
+  private void setTheDate(String s) {
+    persistString(this.defaultValue);
+    setSummary(summaryFormatter().format(getDate().getTime()));
   }
 
   /**

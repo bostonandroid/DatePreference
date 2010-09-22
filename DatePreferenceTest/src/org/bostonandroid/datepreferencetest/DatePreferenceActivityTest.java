@@ -69,8 +69,10 @@ public class DatePreferenceActivityTest extends
     Calendar newDate = getDatePreference(activity).getDate();
     Calendar expected = defaultDate();
     expected.add(Calendar.DAY_OF_MONTH, 1);
+    String newDateSummary = getDatePreference(activity).getSummary().toString();
     
     assertCalendarDateEquals(expected, newDate);
+    assertSummary(expected, newDateSummary);
   }
   
   public void testDateCanceled() {
@@ -197,14 +199,12 @@ public class DatePreferenceActivityTest extends
     pressOK();
     activity.finish();
     activity = getActivity();
-    
-    Calendar newDodDate = getDatePreference(activity, "dod").getDate();
+ 
     Calendar expected = defaultDate();
     expected.add(Calendar.DAY_OF_MONTH, 1);
-    assertCalendarDateEquals(expected, newDodDate);
-    
-    Calendar newDoaDate = getDatePreference(activity, "doa").getDate();
-    assertCalendarDateEquals(defaultDate(), newDoaDate);
+
+    assertCalendarDateEquals(expected, getDatePreference(activity, "dod").getDate());
+//    assertCalendarDateEquals(defaultDate(), getDatePreference(activity, "doa").getDate()); // not yet possible to test
   }
   
   private Calendar defaultDate() {
@@ -224,10 +224,18 @@ public class DatePreferenceActivityTest extends
     assertEquals(msg, expected.getMonth(), actual.getMonth());
     assertEquals(msg, expected.getDay(), actual.getDay());
   }
+  
+  protected void assertSummary(Calendar expected, String actual) {
+    assertEquals(summaryFormatter().format(expected.getTime()), actual);
+  }
 
   
   private SimpleDateFormat formatter() {
     return new SimpleDateFormat("yyyy.MM.dd");
+  }
+  
+  private SimpleDateFormat summaryFormatter() {
+    return new SimpleDateFormat("MMMM dd, yyyy");
   }
   
   private void pressOK() {
