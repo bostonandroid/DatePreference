@@ -16,6 +16,7 @@ import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.TextView;
 
 public class DatePreference extends DialogPreference implements
     DatePicker.OnDateChangedListener {
@@ -45,6 +46,16 @@ public class DatePreference extends DialogPreference implements
         calendar.get(Calendar.DAY_OF_MONTH), this);
     return datePicker;
   }
+  
+  @Override
+  protected void onBindView(View v) {
+    super.onBindView(v);
+    TextView summaryView = (TextView) v.findViewById(android.R.id.summary);
+    String summary = summaryFormatter().format(getDate().getTime());
+    summaryView.setText(summary);
+    summaryView.setVisibility(View.VISIBLE);
+    setSummary(summary);
+  }
 
   /**
    * Produces the date used for the date picker. If the user has not selected a
@@ -61,7 +72,6 @@ public class DatePreference extends DialogPreference implements
       cal.setTime(date);
       return cal;
     } catch (java.text.ParseException e) {
-      e.printStackTrace();
       return defaultDate();
     }
   }
@@ -112,10 +122,11 @@ public class DatePreference extends DialogPreference implements
   protected void onRestoreInstanceState(Parcelable state) {
     if (state == null || !state.getClass().equals(SavedState.class)) {
       super.onRestoreInstanceState(state);
+      setTheDate(((SavedState)state).dateValue);
     } else {
       SavedState s = (SavedState)state;
       super.onRestoreInstanceState(s.getSuperState());
-      setDate(s.dateValue);
+      setTheDate(s.dateValue);
     }
   }
 
@@ -141,7 +152,8 @@ public class DatePreference extends DialogPreference implements
   }
   
   private void setTheDate(String s) {
-    persistString(this.defaultValue);
+    setDate(s);
+    persistString(s);
     setSummary(summaryFormatter().format(getDate().getTime()));
   }
 

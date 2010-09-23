@@ -38,8 +38,11 @@ public class DatePreferenceActivityTest extends
     PreferenceManager preferenceManager = activity.getPreferenceManager();
     DatePreference datePreference = (DatePreference)preferenceManager.findPreference("dob");
     Calendar defaultDate = datePreference.getDate();
+    String newDateSummary = (String)datePreference.getSummary();
+    assertNotNull(newDateSummary);
     Calendar expected = new GregorianCalendar(1991,0,1);
     assertCalendarDateEquals(expected, defaultDate);
+    assertSummary(expected, newDateSummary);
   }
   
   public void testDefaultDateForBadDate() {
