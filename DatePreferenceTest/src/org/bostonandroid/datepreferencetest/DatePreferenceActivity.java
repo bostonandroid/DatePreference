@@ -1,7 +1,6 @@
 package org.bostonandroid.datepreferencetest;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import org.bostonandroid.datepreference.DatePreference;
 
@@ -10,7 +9,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 public class DatePreferenceActivity extends PreferenceActivity {
   private Bundle savedInstanceState;
@@ -25,25 +23,15 @@ public class DatePreferenceActivity extends PreferenceActivity {
   public Bundle getBundle() {
     return savedInstanceState;
   }
-
+  
   // This is used by the test.
-  public Date getDateOfDeath() {
+  public Calendar getCalendarOfDeath() {
     return DatePreference.getDateFor(preferences(),"dod");
   }
   
   // This is used by the test.
-  public Calendar getCalendarOfDeath() {
-    return DatePreference.getCalendarFor(preferences(),"dod");
-  }
-  
-  // This is used by the test.
-  public Date getDateOfArrival() {
-    return DatePreference.getDateFor(preferences(),"doa");
-  }
-  
-  // This is used by the test.
   public Calendar getCalendarOfArrival() {
-    return DatePreference.getCalendarFor(preferences(),"doa");
+    return DatePreference.getDateFor(preferences(),"doa");
   }
   
   private SharedPreferences preferences() {
@@ -51,21 +39,17 @@ public class DatePreferenceActivity extends PreferenceActivity {
   }
   
   protected void onResume() {
-    Log.i("DatePreferenceActivity", "onResume()");
     super.onResume();
     
     SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-    Log.i("DatePreferenceActivity", prefs.getString("dod", DatePreference.defaultDateString()));
-    getPreference("dod").setDate(prefs.getString("dod", DatePreference.defaultDateString()));
+    getPreference("dod").setDate(prefs.getString("dod", DatePreference.defaultCalendarString()));
   }
   
   protected void onPause() {
-    Log.i("DatePreferenceActivity", "onPause()");
     super.onPause();
     
     SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
-    Log.i("DatePreferenceActivity", DatePreference.formatter().format(getDateOfDeath()));
-    editor.putString("dod", DatePreference.formatter().format(getDateOfDeath()));
+    editor.putString("dod", DatePreference.formatter().format(getCalendarOfDeath().getTime()));
     editor.commit();
   }
   

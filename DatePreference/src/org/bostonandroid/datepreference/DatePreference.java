@@ -14,13 +14,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 
 public class DatePreference extends DialogPreference implements
     DatePicker.OnDateChangedListener {
-  private String defaultValue;
+  private String dateString;
   private String changedValueCanBeNull;
   private DatePicker datePicker;
 
@@ -62,20 +61,37 @@ public class DatePreference extends DialogPreference implements
       cal.setTime(date);
       return cal;
     } catch (java.text.ParseException e) {
-      return defaultDate();
+      return defaultCalendar();
     }
   }
 
   /**
-   * Produces the date formatter used for all dates. The default is yyyy.MM.dd.
+   * Set the selected date to the specified string.
+   * 
+   * @param dateString
+   *          The date, represented as a string, in the format specified by
+   *          {@link formatter}.
+   */
+  public void setDate(String dateString) {
+    this.dateString = dateString;
+  }
+
+  /**
+   * Produces the date formatter used for dates in the XML. The default is yyyy.MM.dd.
    * Override this to change that.
    * 
-   * @return the SimpleDateFormat used for all dates
+   * @return the SimpleDateFormat used for XML dates
    */
   public static SimpleDateFormat formatter() {
     return new SimpleDateFormat("yyyy.MM.dd");
   }
-  
+
+  /**
+   * Produces the date formatter used for showing the date in the summary. The default is MMMM dd, yyyy.
+   * Override this to change it.
+   * 
+   * @return the SimpleDateFormat used for summary dates
+   */
   public static SimpleDateFormat summaryFormatter() {
     return new SimpleDateFormat("MMMM dd, yyyy");
   }
@@ -92,19 +108,19 @@ public class DatePreference extends DialogPreference implements
   @Override
   protected void onSetInitialValue(boolean restoreValue, Object def) {
     if (restoreValue) {
-      Log.i("DatePreference", "onSetInitialValue: true restoreValue = "+restoreValue+", dV="+this.defaultValue);
-      this.defaultValue = getPersistedString(defaultValue());
-      setTheDate(this.defaultValue);
+      this.dateString = getPersistedString(defaultValue());
+      setTheDate(this.dateString);
     } else {
-      Log.i("DatePreference", "onSetInitialValue: false restoreValue = "+restoreValue+", dV="+this.defaultValue);
-      boolean wasNull = this.defaultValue == null;
-      String value = (String) def;
-      this.defaultValue = value;
+      boolean wasNull = this.dateString == null;
+      setDate((String) def);
       if (!wasNull)
-        setTheDate(value);
+        persistDate(this.dateString);
     }
   }
-  
+
+  /**
+   * Called when Android pauses the activity.
+   */
   @Override
   protected Parcelable onSaveInstanceState() {
     if (isPersistent())
@@ -112,14 +128,17 @@ public class DatePreference extends DialogPreference implements
     else
       return new SavedState(super.onSaveInstanceState());
   }
-  
+
+  /**
+   * Called when Android restores the activity.
+   */
   @Override
   protected void onRestoreInstanceState(Parcelable state) {
     if (state == null || !state.getClass().equals(SavedState.class)) {
       super.onRestoreInstanceState(state);
-      setTheDate(((SavedState)state).dateValue);
+      setTheDate(((SavedState) state).dateValue);
     } else {
-      SavedState s = (SavedState)state;
+      SavedState s = (SavedState) state;
       super.onRestoreInstanceState(s.getSuperState());
       setTheDate(s.dateValue);
     }
@@ -140,14 +159,17 @@ public class DatePreference extends DialogPreference implements
   @Override
   protected void onDialogClosed(boolean shouldSave) {
     if (shouldSave && this.changedValueCanBeNull != null) {
-      this.defaultValue = this.changedValueCanBeNull;
+      setTheDate(this.changedValueCanBeNull);
       this.changedValueCanBeNull = null;
-      setTheDate(this.defaultValue);
     }
   }
-  
+
   private void setTheDate(String s) {
     setDate(s);
+    persistDate(s);
+  }
+
+  private void persistDate(String s) {
     persistString(s);
     setSummary(summaryFormatter().format(getDate().getTime()));
   }
@@ -158,29 +180,28 @@ public class DatePreference extends DialogPreference implements
    * 
    * @return the Calendar set to the default date
    */
-  public static Calendar defaultDate() {
+  public static Calendar defaultCalendar() {
     return new GregorianCalendar(1970, 0, 1);
   }
 
   /**
-   * The defaultDate() as a string using the {@link formatter}.
+   * The defaultCalendar() as a string using the {@link formatter}.
    * 
    * @return a String representation of the default date
    */
-  public static String defaultDateString() {
-    return formatter().format(defaultDate().getTime());
+  public static String defaultCalendarString() {
+    return formatter().format(defaultCalendar().getTime());
   }
 
   private String defaultValue() {
-    if (this.defaultValue == null) {
-      this.defaultValue = defaultDateString();
-    }
-    return this.defaultValue;
+    if (this.dateString == null)
+      setDate(defaultCalendarString());
+    return this.dateString;
   }
 
   /**
-   * Called whenever the user clicks on a button. Invokes {@link onDateChanged} and
-   * {@link onDialogClosed}. Be sure to call the super when overriding.
+   * Called whenever the user clicks on a button. Invokes {@link onDateChanged}
+   * and {@link onDialogClosed}. Be sure to call the super when overriding.
    */
   @Override
   public void onClick(DialogInterface dialog, int which) {
@@ -189,20 +210,6 @@ public class DatePreference extends DialogPreference implements
     onDateChanged(datePicker, datePicker.getYear(), datePicker.getMonth(),
         datePicker.getDayOfMonth());
     onDialogClosed(which == DialogInterface.BUTTON1); // OK?
-  }
-
-  /**
-   * Produces the date the user has selected for the given preference. If there
-   * are any internal errors it produces the {@link defaultDate} instead.
-   * 
-   * @param preferences
-   *          the SharedPreferences to get the date from
-   * @param name
-   *          the name of the preference to get the date from
-   * @return a Date that the user has selected
-   */
-  public static Date getDateFor(SharedPreferences preferences, String field) {
-    return stringToDate(preferences.getString(field, defaultDateString()));
   }
 
   /**
@@ -215,45 +222,42 @@ public class DatePreference extends DialogPreference implements
    *          the name of the preference to get the date from
    * @return a Calendar that the user has selected
    */
-  public static Calendar getCalendarFor(SharedPreferences preferences,
-      String field) {
-    Date date = getDateFor(preferences, field);
+  public static Calendar getDateFor(SharedPreferences preferences, String field) {
+    Date date = stringToDate(preferences.getString(field,
+        defaultCalendarString()));
     Calendar cal = Calendar.getInstance();
     cal.setTime(date);
     return cal;
   }
-  
-  public void setDate(String dateString) {
-    this.defaultValue = dateString;
-  }
-  
+
   private static Date stringToDate(String dateString) {
     try {
       return formatter().parse(dateString);
     } catch (ParseException e) {
-      return defaultDate().getTime();
+      return defaultCalendar().getTime();
     }
   }
-  
+
   private static class SavedState extends BaseSavedState {
     String dateValue;
+
     public SavedState(Parcel p) {
       super(p);
       dateValue = p.readString();
     }
+
     public SavedState(Parcelable p) {
       super(p);
     }
-    
+
     @Override
     public void writeToParcel(Parcel out, int flags) {
       super.writeToParcel(out, flags);
       out.writeString(dateValue);
     }
-  
+
     @SuppressWarnings("unused")
-    public static final Parcelable.Creator<SavedState> CREATOR =
-      new Parcelable.Creator<SavedState>() {
+    public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
       public SavedState createFromParcel(Parcel in) {
         return new SavedState(in);
       }

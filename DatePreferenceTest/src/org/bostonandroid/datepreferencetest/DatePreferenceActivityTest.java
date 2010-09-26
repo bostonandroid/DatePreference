@@ -176,7 +176,6 @@ public class DatePreferenceActivityTest extends
 
     Calendar expected = defaultDate();
     expected.add(Calendar.DAY_OF_MONTH, 1);
-    assertDateEquals(expected.getTime(), activity.getDateOfDeath());
     assertCalendarDateEquals(expected, activity.getCalendarOfDeath());
   }
   
