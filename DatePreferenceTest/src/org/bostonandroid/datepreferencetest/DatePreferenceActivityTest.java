@@ -24,13 +24,15 @@ public class DatePreferenceActivityTest extends
     super.setUp();
     setActivityInitialTouchMode(false);
   }
-  
+
   public void testDefaultDateUnset() {
-    DatePreferenceActivity activity = getRestoredActivity();
+    DatePreferenceActivity activity = getActivity();
     PreferenceManager preferenceManager = activity.getPreferenceManager();
-    DatePreference datePreference = (DatePreference)preferenceManager.findPreference("dod");
+    DatePreference datePreference = (DatePreference)preferenceManager.findPreference("doa");
     Calendar givenDate = datePreference.getDate();
     assertCalendarDateEquals(defaultDate(), givenDate);
+    String defaultSummary = (String)datePreference.getSummary();
+    assertNull("expected null but got " + defaultSummary, defaultSummary);
   }
   
   public void testDefaultDateFromXml() {
@@ -290,6 +292,7 @@ public class DatePreferenceActivityTest extends
   
   private DatePreferenceActivity getRestoredActivity() {
     DatePreferenceActivity a = getActivity();
+ //   a.clearSharedPreferences();
     getDatePreference(a,"dob").setDate("1970.01.01");
     getDatePreference(a,"dod").setDate("1970.01.01");
     getDatePreference(a,"doa").setDate("1970.01.01");

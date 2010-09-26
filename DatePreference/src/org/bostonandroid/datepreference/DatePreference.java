@@ -14,9 +14,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.TextView;
 
 public class DatePreference extends DialogPreference implements
     DatePicker.OnDateChangedListener {
@@ -45,16 +45,6 @@ public class DatePreference extends DialogPreference implements
     datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH), this);
     return datePicker;
-  }
-  
-  @Override
-  protected void onBindView(View v) {
-    super.onBindView(v);
-    TextView summaryView = (TextView) v.findViewById(android.R.id.summary);
-    String summary = summaryFormatter().format(getDate().getTime());
-    summaryView.setText(summary);
-    summaryView.setVisibility(View.VISIBLE);
-    setSummary(summary);
   }
 
   /**
@@ -102,11 +92,16 @@ public class DatePreference extends DialogPreference implements
   @Override
   protected void onSetInitialValue(boolean restoreValue, Object def) {
     if (restoreValue) {
+      Log.i("DatePreference", "onSetInitialValue: true restoreValue = "+restoreValue+", dV="+this.defaultValue);
       this.defaultValue = getPersistedString(defaultValue());
+      setTheDate(this.defaultValue);
     } else {
+      Log.i("DatePreference", "onSetInitialValue: false restoreValue = "+restoreValue+", dV="+this.defaultValue);
+      boolean wasNull = this.defaultValue == null;
       String value = (String) def;
       this.defaultValue = value;
-      setTheDate(value);
+      if (!wasNull)
+        setTheDate(value);
     }
   }
   

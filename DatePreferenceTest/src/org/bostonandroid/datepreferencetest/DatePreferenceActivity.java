@@ -69,6 +69,13 @@ public class DatePreferenceActivity extends PreferenceActivity {
     editor.commit();
   }
   
+  public void clearSharedPreferences() {
+    SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
+    editor.clear();
+    editor.commit();
+  }
+    
+  
   private DatePreference getPreference(String key) {
     return (DatePreference)getPreferenceManager().findPreference(key);
   }
