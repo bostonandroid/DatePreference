@@ -20,6 +20,7 @@ To quickly get the Date selected for "dob", in your PreferenceActivity:
     PreferenceManager.getDefaultSharePreferences(this),
     "dob");
 
+To set the date use .setDate(String).
 
 
 To make the JAR:

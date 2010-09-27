@@ -32,7 +32,7 @@ public class DatePreference extends DialogPreference implements
   }
 
   /**
-   * Produces a DatePicker set to the date produced by {@link getDate}. When
+   * Produces a DatePicker set to the date produced by {@link #getDate()}. When
    * overriding be sure to call the super.
    * 
    * @return a DatePicker with the date set
@@ -50,7 +50,7 @@ public class DatePreference extends DialogPreference implements
    * Produces the date used for the date picker. If the user has not selected a
    * date, produces the default from the XML's android:defaultValue. If the
    * default is not set in the XML or if the XML's default is invalid it uses
-   * the value produced by {@link defaultDate}.
+   * the value produced by {@link #defaultCalendar()}.
    * 
    * @return the Calendar for the date picker
    */
@@ -70,7 +70,7 @@ public class DatePreference extends DialogPreference implements
    * 
    * @param dateString
    *          The date, represented as a string, in the format specified by
-   *          {@link formatter}.
+   *          {@link #formatter()}.
    */
   public void setDate(String dateString) {
     this.dateString = dateString;
@@ -185,7 +185,7 @@ public class DatePreference extends DialogPreference implements
   }
 
   /**
-   * The defaultCalendar() as a string using the {@link formatter}.
+   * The defaultCalendar() as a string using the {@link #formatter()}.
    * 
    * @return a String representation of the default date
    */
@@ -200,8 +200,8 @@ public class DatePreference extends DialogPreference implements
   }
 
   /**
-   * Called whenever the user clicks on a button. Invokes {@link onDateChanged}
-   * and {@link onDialogClosed}. Be sure to call the super when overriding.
+   * Called whenever the user clicks on a button. Invokes {@link #onDateChanged(DatePicker, int, int, int)}
+   * and {@link #onDialogClosed(boolean)}. Be sure to call the super when overriding.
    */
   @Override
   public void onClick(DialogInterface dialog, int which) {
@@ -218,7 +218,7 @@ public class DatePreference extends DialogPreference implements
    * 
    * @param preferences
    *          the SharedPreferences to get the date from
-   * @param name
+   * @param field
    *          the name of the preference to get the date from
    * @return a Calendar that the user has selected
    */
