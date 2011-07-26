@@ -161,6 +161,7 @@ public class DatePreference extends DialogPreference implements
     if (shouldSave && this.changedValueCanBeNull != null) {
       setTheDate(this.changedValueCanBeNull);
       this.changedValueCanBeNull = null;
+      this.callChangeListener(getDate());
     }
   }
 
