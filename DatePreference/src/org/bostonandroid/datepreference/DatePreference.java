@@ -136,7 +136,7 @@ public class DatePreference extends DialogPreference implements
   protected void onRestoreInstanceState(Parcelable state) {
     if (state == null || !state.getClass().equals(SavedState.class)) {
       super.onRestoreInstanceState(state);
-      setTheDate(((SavedState) state).dateValue);
+      setTheDate(defaultValue());
     } else {
       SavedState s = (SavedState) state;
       super.onRestoreInstanceState(s.getSuperState());
