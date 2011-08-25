@@ -215,6 +215,35 @@ public class DatePreference extends DialogPreference implements
   /**
    * Produces the date the user has selected for the given preference, as a
    * calendar.
+   *
+   * @param preferences
+   *          the SharedPreferences to get the date from
+   * @param field
+   *          the name of the preference to get the date from
+   * @param defaultDate
+   * the default date to use in case no preference is already saved
+   * @return a Calendar that the user has selected
+   */
+  public static Calendar getDateFor(SharedPreferences preferences, String field, Date defaultDate) {
+    String defaultString = defaultDate != null ? formatter().format(defaultDate) : "";
+    String persisted = preferences.getString(field, defaultString);
+    Date date;
+    if ("".equals(persisted)) {
+      if (defaultDate == null) {
+        return null;
+      } // if
+      date = defaultDate;
+    } else {
+      date = stringToDate(persisted);
+    } // if/else
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(date);
+    return cal;
+  }
+
+  /**
+   * Produces the date the user has selected for the given preference, as a
+   * calendar.
    * 
    * @param preferences
    *          the SharedPreferences to get the date from
