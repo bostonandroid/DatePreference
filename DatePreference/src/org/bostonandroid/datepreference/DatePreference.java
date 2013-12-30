@@ -43,6 +43,7 @@ public class DatePreference extends DialogPreference implements
     Calendar calendar = getDate();
     datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH), this);
+	datePicker.setCalendarViewShown(false); /* else shows day + month + (calendarview instead of year) on api v19/4.4 */
     return datePicker;
   }
 
