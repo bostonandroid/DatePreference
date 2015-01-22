@@ -1,5 +1,6 @@
 package org.bostonandroid.datepreference;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,7 +35,7 @@ public class DatePreference extends DialogPreference implements
   /**
    * Produces a DatePicker set to the date produced by {@link #getDate()}. When
    * overriding be sure to call the super.
-   * 
+   *
    * @return a DatePicker with the date set
    */
   @Override
@@ -51,7 +52,7 @@ public class DatePreference extends DialogPreference implements
    * date, produces the default from the XML's android:defaultValue. If the
    * default is not set in the XML or if the XML's default is invalid it uses
    * the value produced by {@link #defaultCalendar()}.
-   * 
+   *
    * @return the Calendar for the date picker
    */
   public Calendar getDate() {
@@ -67,7 +68,7 @@ public class DatePreference extends DialogPreference implements
 
   /**
    * Set the selected date to the specified string.
-   * 
+   *
    * @param dateString
    *          The date, represented as a string, in the format specified by
    *          {@link #formatter()}.
@@ -79,7 +80,7 @@ public class DatePreference extends DialogPreference implements
   /**
    * Produces the date formatter used for dates in the XML. The default is yyyy.MM.dd.
    * Override this to change that.
-   * 
+   *
    * @return the SimpleDateFormat used for XML dates
    */
   public static SimpleDateFormat formatter() {
@@ -89,11 +90,11 @@ public class DatePreference extends DialogPreference implements
   /**
    * Produces the date formatter used for showing the date in the summary. The default is MMMM dd, yyyy.
    * Override this to change it.
-   * 
+   *
    * @return the SimpleDateFormat used for summary dates
    */
   public static SimpleDateFormat summaryFormatter() {
-    return new SimpleDateFormat("MMMM dd, yyyy");
+    return (SimpleDateFormat)DateFormat.getDateInstance();
   }
 
   @Override
@@ -177,7 +178,7 @@ public class DatePreference extends DialogPreference implements
   /**
    * The default date to use when the XML does not set it or the XML has an
    * error.
-   * 
+   *
    * @return the Calendar set to the default date
    */
   public static Calendar defaultCalendar() {
@@ -186,7 +187,7 @@ public class DatePreference extends DialogPreference implements
 
   /**
    * The defaultCalendar() as a string using the {@link #formatter()}.
-   * 
+   *
    * @return a String representation of the default date
    */
   public static String defaultCalendarString() {
@@ -215,7 +216,7 @@ public class DatePreference extends DialogPreference implements
   /**
    * Produces the date the user has selected for the given preference, as a
    * calendar.
-   * 
+   *
    * @param preferences
    *          the SharedPreferences to get the date from
    * @param field
